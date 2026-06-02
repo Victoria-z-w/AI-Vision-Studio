@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+.venv/
+venv/
+
+# Environment
+.env
+*.local
+
+# Data
+data/
+uploads/
+test_data/
+
+# Node
+node_modules/
+frontend/dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Claude
+.claude/plans/
+.claude/settings.local.json
+.claude/memory/
+
+# Models (downloaded at runtime)
+*.pt
+*.pth
+*.onnx
+*.paddle

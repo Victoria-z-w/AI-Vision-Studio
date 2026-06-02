@@ -1,0 +1,36 @@
+# GPU-enabled override for docker-compose.yml
+# Usage: docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
+#
+# Prerequisites:
+#   1. NVIDIA Container Toolkit installed
+#      https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+#   2. NVIDIA driver >= 525 (for CUDA 12)
+
+services:
+  api:
+    build:
+      args:
+        PIP_EXTRAS: ".[dev,gpu]"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - DEVICE=cuda
+
+  worker:
+    build:
+      args:
+        PIP_EXTRAS: ".[dev,gpu]"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - DEVICE=cuda

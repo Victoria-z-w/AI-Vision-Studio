@@ -1,0 +1,37 @@
+{
+  "name": "ai-vision-studio-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.ts,.tsx",
+    "type-check": "vue-tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "vue": "^3.5",
+    "vue-router": "^4.4",
+    "pinia": "^2.2",
+    "axios": "^1.7",
+    "element-plus": "^2.8",
+    "@element-plus/icons-vue": "^2.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1",
+    "typescript": "^5.5",
+    "vite": "^5.4",
+    "vue-tsc": "^2.1",
+    "vitest": "^2.0",
+    "@vue/test-utils": "^2.4",
+    "jsdom": "^24.0",
+    "eslint": "^9.0",
+    "@typescript-eslint/eslint-plugin": "^8.0",
+    "@typescript-eslint/parser": "^8.0",
+    "eslint-plugin-vue": "^9.0",
+    "prettier": "^3.3"
+  }
+}

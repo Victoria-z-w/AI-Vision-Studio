@@ -1,0 +1,10 @@
+# Frontend Docker ignore
+node_modules/
+.git/
+.gitignore
+*.md
+!Dockerfile
+dist/
+.env
+.idea/
+.vscode/

@@ -34,9 +34,10 @@ class TestValidateUpload:
     def test_rejects_unsupported_mime(self):
         content = b"GIF89a\x00\x01\x00\x01"
         file = UploadFile(
-            filename="test.gif", file=BytesIO(content),
+            filename="test.gif",
+            file=BytesIO(content),
+            headers={"content-type": "image/gif"},
         )
-        file.content_type = "image/gif"
         with pytest.raises(ValidationError):
             validate_upload(file)
 

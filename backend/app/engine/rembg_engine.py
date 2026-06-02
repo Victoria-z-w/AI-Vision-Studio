@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 import logging
-import time
 from typing import Any
 
-import numpy as np
 from PIL import Image
 
 from app.engine.base import AbstractCVEngine
@@ -12,7 +10,7 @@ from app.engine.base import AbstractCVEngine
 logger = logging.getLogger(__name__)
 
 
-def _create_rembg_engine(device: str) -> "RembgEngine":
+def _create_rembg_engine(device: str) -> RembgEngine:
     return RembgEngine(device)
 
 
@@ -40,10 +38,8 @@ class RembgEngine(AbstractCVEngine):
 
         from rembg import remove
 
-        start = time.perf_counter()
         input_image = Image.open(image_path).convert("RGB")
         output = remove(input_image, session=self._session)
-        elapsed_ms = (time.perf_counter() - start) * 1000
 
         return {
             "foreground": output,

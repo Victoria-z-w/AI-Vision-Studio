@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import time
 from typing import Any
 
 from app.config import settings
@@ -29,7 +28,7 @@ COCO_CLASSES = {
 }
 
 
-def _create_yolo_engine(device: str) -> "YOLOEngine":
+def _create_yolo_engine(device: str) -> YOLOEngine:
     return YOLOEngine(device)
 
 
@@ -53,10 +52,8 @@ class YOLOEngine(AbstractCVEngine):
             self.load()
 
         conf = confidence_threshold or settings.CONFIDENCE_THRESHOLD
-        start = time.perf_counter()
 
         results = self._model(image_path, device=self._device, verbose=False)
-        elapsed_ms = (time.perf_counter() - start) * 1000
 
         detections = []
         if results and results[0].boxes:
@@ -67,9 +64,10 @@ class YOLOEngine(AbstractCVEngine):
                     continue
                 cls_id = int(boxes.cls[i])
                 x1, y1, x2, y2 = boxes.xyxy[i].tolist()
+                bbox = {"x1": round(x1), "y1": round(y1), "x2": round(x2), "y2": round(y2)}
                 detections.append(
                     {
-                        "bbox": {"x1": round(x1), "y1": round(y1), "x2": round(x2), "y2": round(y2)},
+                        "bbox": bbox,
                         "class_id": cls_id,
                         "class_name": COCO_CLASSES.get(cls_id, f"class_{cls_id}"),
                         "confidence": round(c, 4),

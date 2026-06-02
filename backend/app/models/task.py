@@ -1,17 +1,20 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
-from enum import Enum
+from datetime import UTC, datetime
+from enum import StrEnum
+from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, Float, Integer, JSON, String, Text, func
-from sqlalchemy.dialects.sqlite import JSON as SQLiteJSON
+from sqlalchemy import JSON, DateTime, Float, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
 
+if TYPE_CHECKING:
+    from app.models.file import File
 
-class TaskStatus(str, Enum):
+
+class TaskStatus(StrEnum):
     PENDING = "PENDING"
     PROCESSING = "PROCESSING"
     SUCCESS = "SUCCESS"
@@ -35,11 +38,11 @@ class Task(Base):
     device: Mapped[str | None] = mapped_column(String(30), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
     )
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    files: Mapped[list["File"]] = relationship(
+    files: Mapped[list[File]] = relationship(
         "File", back_populates="task", cascade="all, delete-orphan", lazy="selectin"
     )

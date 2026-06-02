@@ -3,9 +3,9 @@ from __future__ import annotations
 import logging
 import time
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
@@ -13,9 +13,8 @@ from app.engine.registry import model_registry
 from app.models.file import File
 from app.models.task import Task, TaskStatus
 from app.preprocessing.pipeline import compute_sha256_short, run_preprocessing
-from app.schemas.inference import InferenceMeta
 from app.storage.file_manager import file_manager
-from app.utils.image import get_image_info, image_to_base64, make_thumbnail, numpy_to_native
+from app.utils.image import get_image_info, image_to_base64, numpy_to_native
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +100,7 @@ async def create_task(
         task.result_json = numpy_to_native(result_data)
         task.inference_time_ms = inference_time_ms
         task.device = model_registry.device
-        task.completed_at = datetime.now(timezone.utc)
+        task.completed_at = datetime.now(UTC)
 
         return result_data
 
@@ -109,7 +108,7 @@ async def create_task(
         logger.exception(f"Inference failed for task {task_id}")
         task.status = TaskStatus.FAILED.value
         task.error_message = str(e)
-        task.completed_at = datetime.now(timezone.utc)
+        task.completed_at = datetime.now(UTC)
         raise
 
 
@@ -128,14 +127,13 @@ def _build_result(
     # ── Extract non-serializable data BEFORE save_json ──
     foreground_img = infer_result.pop("foreground", None) if model_type == "rembg" else None
     foreground_base64 = None
-    foreground_path = None
 
     if foreground_img is not None:
-        foreground_path = file_manager.save_image(session_id, task_id, foreground_img, "foreground")
+        file_manager.save_image(session_id, task_id, foreground_img, "foreground")
         foreground_base64 = image_to_base64(foreground_img)
 
     # Now infer_result is safe to serialize
-    result_json_path = file_manager.save_json(session_id, task_id, infer_result)
+    file_manager.save_json(session_id, task_id, infer_result)
 
     result = {
         "task_id": task_id,
@@ -144,7 +142,7 @@ def _build_result(
         "result": _strip_model_specific(infer_result),
         "raw_result_url": f"/api/v1/tasks/{task_id}/result.json",
         "meta": meta,
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(UTC).isoformat(),
     }
 
     if model_type == "yolo":

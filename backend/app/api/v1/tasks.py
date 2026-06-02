@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.limiter import limiter
 from app.models import get_db
 from app.schemas.task import TaskDeleteRequest
-from app.services.task_service import delete_task, get_task, get_task_status, list_tasks
+from app.services.task_service import delete_task, get_task_status, list_tasks
 from app.storage.file_manager import file_manager
 from app.utils.image import make_thumbnail
 

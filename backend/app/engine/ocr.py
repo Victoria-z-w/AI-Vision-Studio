@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 import os
-import time
 from typing import Any
 
 from app.config import settings
@@ -15,7 +14,7 @@ os.environ["FLAGS_use_mkldnn"] = "0"
 logger = logging.getLogger(__name__)
 
 
-def _create_ocr_engine(device: str) -> "OCREngine":
+def _create_ocr_engine(device: str) -> OCREngine:
     return OCREngine(device)
 
 
@@ -45,10 +44,8 @@ class OCREngine(AbstractCVEngine):
             self.load()
 
         conf = confidence_threshold or settings.OCR_CONFIDENCE_THRESHOLD
-        start = time.perf_counter()
 
         raw = self._ocr.ocr(image_path, cls=True)
-        elapsed_ms = (time.perf_counter() - start) * 1000
 
         regions = []
         if raw and raw[0]:

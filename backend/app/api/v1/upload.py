@@ -2,21 +2,20 @@ from __future__ import annotations
 
 import logging
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, File, Form, Request, Response, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_install_command, get_model_description
 from app.engine.registry import model_registry
+from app.limiter import limiter
 from app.models import get_db
 from app.models.task import Task, TaskStatus
 from app.schemas.task import ErrorResponse
 from app.services.task_service import create_task
 from app.storage.file_manager import file_manager
 from app.utils.validators import ValidationError, validate_upload
-
-from app.limiter import limiter
 
 logger = logging.getLogger(__name__)
 
@@ -138,7 +137,10 @@ async def upload_image(
     except TypeError:
         logger.exception("Internal serialization error")
         return Response(
-            content='{"error":"INFERENCE_FAILED","detail":"Internal serialization error — please try again"}',
+            content=(
+                '{"error":"INFERENCE_FAILED",'
+                '"detail":"Internal serialization error — please try again"}'
+            ),
             media_type="application/json",
             status_code=500,
         )
@@ -162,7 +164,7 @@ async def _handle_async(
     task, input_path = _save_and_create_task(
         db, session_id, model_type, file_content, original_name, confidence_threshold
     )
-    task.started_at = datetime.now(timezone.utc)
+    task.started_at = datetime.now(UTC)
     await db.flush()
 
     from celery_worker import celery_app

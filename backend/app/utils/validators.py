@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 from fastapi import UploadFile
 
 from app.config import settings
@@ -29,9 +27,7 @@ class ValidationError(Exception):
 def validate_upload(file: UploadFile) -> tuple[bytes, str]:
     """Validate uploaded file and return (content_bytes, detected_format)."""
     # Check filename extension
-    if file.filename:
-        ext = Path(file.filename).suffix.lower()
-    else:
+    if not file.filename:
         raise ValidationError("INVALID_FILENAME", "No filename provided")
 
     # Check content type
@@ -49,7 +45,8 @@ def validate_upload(file: UploadFile) -> tuple[bytes, str]:
     if len(content) > max_bytes:
         raise ValidationError(
             "FILE_TOO_LARGE",
-            f"File size {len(content) / 1024 / 1024:.1f}MB exceeds limit of {settings.MAX_FILE_SIZE_MB}MB",
+            f"File size {len(content) / 1024 / 1024:.1f}MB "
+            f"exceeds limit of {settings.MAX_FILE_SIZE_MB}MB",
         )
 
     # Check magic bytes
@@ -57,8 +54,8 @@ def validate_upload(file: UploadFile) -> tuple[bytes, str]:
     if detected is None:
         raise ValidationError(
             "UNSUPPORTED_FORMAT",
-            f"Cannot detect image format from file content. "
-            f"Supported: JPEG, PNG, WebP, BMP, TIFF",
+            "Cannot detect image format from file content. "
+            "Supported: JPEG, PNG, WebP, BMP, TIFF",
         )
 
     return content, detected

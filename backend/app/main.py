@@ -23,9 +23,9 @@ async def lifespan(app: FastAPI):
     await init_db()
 
     # Register CV engines (lazy-loaded on first use)
-    from app.engine.yolo import _create_yolo_engine
-    from app.engine.rembg_engine import _create_rembg_engine
     from app.engine.ocr import _create_ocr_engine
+    from app.engine.rembg_engine import _create_rembg_engine
+    from app.engine.yolo import _create_yolo_engine
 
     model_registry.register("yolo", _create_yolo_engine)
     model_registry.register("rembg", _create_rembg_engine)

@@ -24,7 +24,9 @@ class FileManager:
         d.mkdir(parents=True, exist_ok=True)
         return d
 
-    def save_upload(self, session_id: str, task_id: str, content: bytes, original_name: str) -> Path:
+    def save_upload(
+        self, session_id: str, task_id: str, content: bytes, original_name: str
+    ) -> Path:
         d = self.task_dir(session_id, task_id)
         ext = Path(original_name).suffix or ".png"
         path = d / f"input_{uuid.uuid4().hex[:8]}{ext}"
